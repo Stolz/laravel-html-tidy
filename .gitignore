@@ -1,0 +1,11 @@
+/vendor
+composer.phar
+composer.lock
+.DS_Store
+
+# Old files
+*~
+.*~
+*.nfs00*
+*.kate-swp
+*.old
