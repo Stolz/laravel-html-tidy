@@ -1,8 +1,8 @@
-<?php namespace Stolz\Filter;
+<?php namespace Stolz\Filters\HtmlTidy;
 
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 
-class HtmlTidyServiceProvider extends ServiceProvider {
+class ServiceProvider extends IlluminateServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -38,7 +38,7 @@ class HtmlTidyServiceProvider extends ServiceProvider {
 		// Bind 'stolz.filter.tidy' shared component to the IoC container
 		$this->app->singleton('stolz.filter.tidy', function($app)
 		{
-			return new HtmlTidy();
+			return new Filter();
 		});
 	}
 

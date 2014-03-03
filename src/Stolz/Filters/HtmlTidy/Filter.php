@@ -1,10 +1,10 @@
-<?php namespace Stolz\Filter;
+<?php namespace Stolz\Filters\HtmlTidy;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 //use Illuminate\Routing\Route;
 
-class HtmlTidy {
+class Filter {
 
 	/**
 	 * Whether or not the filter is globally enabled.
@@ -141,7 +141,6 @@ class HtmlTidy {
 	 */
 	public function filter($route, Request $request, Response $response)
 	{
-
 		if ( ! $this->filterable($request, $response))
 			return null;
 

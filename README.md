@@ -21,24 +21,22 @@ To get the latest version of the filter simply require it in your `composer.json
 
 	composer require "stolz/laravel-html-tidy:dev-master"
 
-Once the package is installed you need to register the service provider with the application. Open up `app/config/app.php` and find the `providers` key:
+Then edit `app/config/app.php` and add the service provider within the `providers` array:
 
 	'providers' => array(
-		...
-		'Stolz\Filter\HtmlTidyServiceProvider',
+		'Stolz\Filters\HtmlTidy\ServiceProvider',
 
 Now add the filter to the bottom of your `app/filters.php` file:
 
-	Route::filter('html-tidy', 'Stolz\Filter\HtmlTidy');
+	Route::filter('html-tidy', 'Stolz\Filters\HtmlTidy\Filter');
 
-Here the filter will be named "html-tidy". Feel free to use any other name as long as you remember to use that name when attaching the filter to your routes.
-
+Here the filter will be named `html-tidy`. Feel free to use any other name as long as you remember to use that name when attaching the filter to your routes.
 
 ## Usage
 
 After following the instructions above the filter is installed and ready to be used as an **"after"** filter. Follow [standard procedure](http://laravel.com/docs/routing#route-filters) to attach the filter to any route(s) you want.
 
-Example `app/routes.php`
+Sample `app/routes.php` assuming the choosen name for the filter in thre previous step was `html-tidy`:
 
 	// Attach to a route with closure
 	Route::get('some/url', array(
