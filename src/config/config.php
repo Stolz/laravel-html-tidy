@@ -15,8 +15,7 @@ return array(
 	// Enable if PHP has tidy extension support
 	'enabled' => extension_loaded('tidy'),
 
-	/*
-	// Filter AJAX requests
+	/*// Filter AJAX requests
 	'ajax' => false,
 
 	// Encoding of your original documents. This refers to the encoding that you original documents have,
@@ -34,7 +33,6 @@ return array(
 
 	// Errors container closing tag
 	'container_close_tag' => '</div>',
-
 
 	// Options passed to HTML Tidy parseString() function. Docs: http://tidy.sourceforge.net/docs/quickref.html
 	'tidy_options' => array(

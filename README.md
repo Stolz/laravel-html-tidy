@@ -17,7 +17,7 @@ To get the latest version of the filter simply require it in your composer.json 
 
 	composer require "stolz/laravel-html-tidy:dev-master"
 
-Once the filter is installed you need to register the service provider with the application. Open up `app/config/app.php` and find the `providers` key.
+Once the package is installed you need to register the service provider with the application. Open up `app/config/app.php` and find the `providers` key.
 
 	'providers' => array(
 		'Stolz\Filter\HtmlTidyServiceProvider',
