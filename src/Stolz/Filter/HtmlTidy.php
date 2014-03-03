@@ -1,17 +1,26 @@
 <?php namespace Stolz\Filter;
 
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+//use Illuminate\Routing\Route;
+
 class HtmlTidy {
 
 	/**
-	 * Whether or not the filter is enabled.
+	 * Whether or not the filter is globally enabled.
 	 * @var bool
 	 */
-	protected $enabled = true; //to-do consider removing this prop
+	protected $enabled = true;
 
 	/**
-	 * Encoding of your original documents.
+	 * Whether or not filter AJAX requests.
+	 * @var bool
+	 */
+	protected $ajax = false;
+
+	/**
+	 * Encoding of the original documents.
 	 * Possible values: ascii, latin0, latin1, raw, utf8, iso2022, mac, win1252, ibm858, utf16, utf16le, utf16be, big5, and shiftjis.
-	 * NOTE: This refers to the encoding that you original documents have, not the enconding that will be used for the output.
 	 * @var string
 	 */
 	protected $encoding = 'utf8';
@@ -85,7 +94,7 @@ class HtmlTidy {
 	 * @param  array $options
 	 * @return void
 	 */
-	function __construct(array $options = array())
+	public function __construct(array $options = array())
 	{
 		if($options)
 			$this->config($options);
@@ -106,38 +115,64 @@ class HtmlTidy {
 		}
 	}
 
+	/**
+	 * Determine whether or not the response should be filtered.
+	 *
+	 * @param  \Illuminate\Http\Request   $request
+	 * @param  \Illuminate\Http\Response  $response
 
-	public function filter($route, $request, $response, $value)
+	 * @return boolean
+	 */
+	protected function filterable(Request $request, Response $response)
 	{
-		if ($this->enabled and ! $request->ajax() and $response instanceof Illuminate\Http\Response and strpos($response->headers->get('content-type'), 'text/html') !== false)
+		if ( ! $this->enabled or ($request->ajax() and ! $this->ajax))
+			return false;
+
+		return (strpos($response->headers->get('content-type'), 'text/html') !== false);
+	}
+
+	/**
+	 * Parse resquest response with PHP HTML Tidy extension
+	 *
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @param  \Illuminate\Http\Request   $request
+	 * @param  \Illuminate\Http\Response  $response
+	 * @return \Illuminate\Http\Response|null
+	 */
+	public function filter($route, Request $request, Response $response)
+	{
+
+		if ( ! $this->filterable($request, $response))
+			return null;
+
+		// Parse output
+		$tidy = new \tidy;
+		$tidy->parseString($response->getContent(), $this->tidy_options, $this->encoding);
+		$tidy->cleanRepair();
+
+		// Set doctype
+		$output = $this->doctype . "\n" . preg_replace('_ xmlns="http://www.w3.org/1999/xhtml"_', null, $tidy, 1);
+
+		// Append errors
+		if ($this->display_errors and $tidy->getStatus())
 		{
-			// Parse output
-			$tidy = new tidy;
-			$tidy->parseString($response->getContent(), $this->tidy_options, $this->encoding);
-			$tidy->cleanRepair();
+			// Omit ignored errors
+			$errors = $tidy->errorBuffer;
+			foreach($this->ignored_errors as $regex)
+				$errors = preg_replace($regex, null, $errors);
 
-			// Set doctype
-			$output = $this->doctype . "\n" . preg_replace('_ xmlns="http://www.w3.org/1999/xhtml"_', null, $tidy, 1);
+			// Wrap errors in a container
+			if (strlen($errors))
+				$errors = $this->container_open_tag . nl2br(htmlentities($errors)) . $this->container_close_tag;
 
-			// Append errors
-			if ($this->display_errors and $tidy->getStatus())
-			{
-				$errors = $tidy->errorBuffer;
-				foreach($this->ignored_errors as $regex)
-				{
-					$errors = preg_replace($regex, null, $errors);
-				}
-
-				// Wrap errors in a container
-				if (strlen($errors))
-					$errors = $tidy->container_open_tag . nl2br(htmlentities($errors)) . $tidy->container_close_tag;
-
-				$output = str_replace ('</body>', $errors . '</body>', $output);
-			}
-
-			// Render $output
-			$response->setContent($output);
+			// Append errors at the end of the document
+			$output = str_replace ('</body>', $errors . '</body>', $output);
 		}
+
+		// Render output
+		$response->setContent($output);
+
+		return $response;
 	}
 
 }
