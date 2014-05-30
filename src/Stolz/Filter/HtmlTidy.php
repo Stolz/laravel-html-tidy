@@ -2,9 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-//use Illuminate\Routing\Route;
 
-class HtmlTidy {
+class HtmlTidy
+{
 
 	/**
 	 * Whether or not the filter is globally enabled.
@@ -65,7 +65,7 @@ class HtmlTidy {
 
 		// HTML5 workarounds
 		'doctype' => 'omit', //The filter will add the configured doctype later
-		'new-blocklevel-tags' =>  'article,aside,canvas,dialog,embed,figcaption,figure,footer,header,hgroup,nav,output,progress,section,video',
+		'new-blocklevel-tags' => 'article,aside,canvas,dialog,embed,figcaption,figure,footer,header,hgroup,nav,output,progress,section,video',
 		'new-inline-tags' => 'audio,bdi,command,datagrid,datalist,details,keygen,mark,meter,rp,rt,ruby,source,summary,time,track,wbr',
 	);
 
@@ -108,7 +108,7 @@ class HtmlTidy {
 	 */
 	public function config(array $config)
 	{
-		foreach($config as $key => $value)
+		foreach ($config as $key => $value)
 		{
 			if(property_exists($this, $key))
 				$this->$key = $value;
@@ -166,7 +166,7 @@ class HtmlTidy {
 				$errors = $this->container_open_tag . nl2br(htmlentities($errors)) . $this->container_close_tag;
 
 			// Append errors at the end of the document
-			$output = str_replace ('</body>', $errors . '</body>', $output);
+			$output = str_replace('</body>', $errors . '</body>', $output);
 		}
 
 		// Render output
@@ -174,5 +174,4 @@ class HtmlTidy {
 
 		return $response;
 	}
-
 }

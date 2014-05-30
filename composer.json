@@ -14,6 +14,9 @@
 		"ext-tidy": "*",
         "illuminate/support": "4.1.*"
     },
+	"require-dev": {
+		"squizlabs/php_codesniffer": "2.*"
+	},
     "autoload": {
         "psr-0": {
             "Stolz\\Filter\\": "src/"
