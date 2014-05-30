@@ -12,48 +12,20 @@
     "require": {
         "php": ">=5.3.0",
 		"ext-tidy": "*",
-        "illuminate/support": "4.1.*"
+		"illuminate/support": "4.1.*",
+		"illuminate/http": "4.1.*"
     },
 	"require-dev": {
 		"squizlabs/php_codesniffer": "2.*"
 	},
     "autoload": {
         "psr-0": {
-            "Stolz\\Filter\\": "src/"
+            "Stolz\\Filters\\HtmlTidy\\": "src/"
         }
     },
 	"config": {
 		"preferred-install": "dist"
 	},
     "minimum-stability": "dev",
-	"license": "MIT"
-}
-
-
-
-{
-	"name": "stolz/laravel-html-tidy",
-	"description": "HTML Tidy filter for Laravel",
-	"keywords": ["htmltidy", "laravel", "html", "xhtml", "html5", "tidy", "filter", "indent", "markup", "beautifier"],
-	"homepage": "https://github.com/Stolz/laravel-html-tidy",
-	"authors": [
-		{
-			"name": "Stolz",
-			"homepage": "https://github.com/Stolz",
-			"role": "developer"
-		}
-	],
-	"require": {
-		"php": ">=5.3.0",
-		"ext-tidy": "*",
-		"illuminate/support": "4.1.*",
-		"illuminate/http": "4.1.*"
-	},
-	"autoload": {
-		"psr-0": {
-			"Stolz\\Filters\\HtmlTidy\\": "src/"
-		}
-	},
-	"minimum-stability": "dev",
 	"license": "MIT"
 }
