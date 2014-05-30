@@ -6,9 +6,9 @@
 
 When editing HTML it's easy to make mistakes. Did you ever forget to close a `<div>` tag that made a mess of all your layout and then you went crazy trying to figure out what/where the problem was?. Wouldn't it be nice if there was a simple way to detect and fix these mistakes automatically and at the same time tidy up sloppy editing into nicely layed out markup? Well that is what [W3C HTML Tidy](http://www.w3.org/People/Raggett/tidy/) utility is for!. HTML Tidy is available as a [PHP extension](http://www.php.net/manual/en/book.tidy.php) and this package makes using it with Laravel a breeze.
 
-Once the filter is enabled every time there is a problem with your HTML code you will see an error messages on the top right corner of your screen. Tidy will try its best to fix the problem for you. Also, if you press "Control+U" to see the final HTML you will get a pleasant surprise.
+Once the filter is enabled every time there is a problem with your HTML code you will see an error messages on the top right corner of your screen. Tidy will try its best to fix the problem for you. Also, if you press "Control+U" to see the final HTML code sent to the browser you will get a pleasant surprise.
 
-Note parsing output always adds a small overhead so consider disabling the filter for production environment, especially if you are not caching your responses.
+**Note:** HTML Tidy is fast but parsing output always adds a small overhead so consider disabling the filter for production environment, especially if you are not caching your responses.
 
 ## Requirements
 
@@ -21,24 +21,22 @@ To get the latest version of the filter simply require it in your `composer.json
 
 	composer require "stolz/laravel-html-tidy:dev-master"
 
-Once the package is installed you need to register the service provider with the application. Open up `app/config/app.php` and find the `providers` key.
+Then edit `app/config/app.php` and add the service provider within the `providers` array:
 
 	'providers' => array(
-		...
-		'Stolz\Filter\HtmlTidyServiceProvider',
+		'Stolz\Filters\HtmlTidy\ServiceProvider',
 
 Now add the filter to the bottom of your `app/filters.php` file:
 
-	Route::filter('html-tidy', 'Stolz\Filter\HtmlTidy');
+	Route::filter('html-tidy', 'Stolz\Filters\HtmlTidy\Filter');
 
-Here the filter will be named "html-tidy". Feel free to use any other name as long as you remember to use that name when attaching the filter to your routes.
-
+Here the filter will be named `html-tidy`. Feel free to use any other name as long as you remember to use that name when attaching the filter to your routes.
 
 ## Usage
 
 After following the instructions above the filter is installed and ready to be used as an **"after"** filter. Follow [standard procedure](http://laravel.com/docs/routing#route-filters) to attach the filter to any route(s) you want.
 
-Example `app/routes.php`
+Sample `app/routes.php` assuming the choosen name for the filter in thre previous step was `html-tidy`:
 
 	// Attach to a route with closure
 	Route::get('some/url', array(
@@ -67,7 +65,7 @@ You may also attach it to all of your routes without having to define a route gr
 
 ## Configuration
 
-To configure the package, you can use the following command to copy the configuration file to `app/config/packages/stolz/laravel-html-tidy/config.php`.
+To configure the package, you can use the following command to copy the configuration file to `app/config/packages/stolz/laravel-html-tidy/config.php`:
 
 	php artisan config:publish stolz/laravel-html-tidy
 

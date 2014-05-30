@@ -1,9 +1,9 @@
-<?php namespace Stolz\Filter;
+<?php namespace Stolz\Filters\HtmlTidy;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class HtmlTidy
+class Filter
 {
 
 	/**
@@ -120,12 +120,11 @@ class HtmlTidy
 	 *
 	 * @param  \Illuminate\Http\Request   $request
 	 * @param  \Illuminate\Http\Response  $response
-
 	 * @return boolean
 	 */
-	protected function filterable(Request $request, Response $response)
+	protected function filterable(Request $request, $response)
 	{
-		if ( ! $this->enabled or ($request->ajax() and ! $this->ajax))
+		if ( ! $this->enabled or ! $response instanceof Response or ($request->ajax() and ! $this->ajax))
 			return false;
 
 		return (strpos($response->headers->get('content-type'), 'text/html') !== false);
@@ -139,9 +138,8 @@ class HtmlTidy
 	 * @param  \Illuminate\Http\Response  $response
 	 * @return \Illuminate\Http\Response|null
 	 */
-	public function filter($route, Request $request, Response $response)
+	public function filter($route, Request $request, $response)
 	{
-
 		if ( ! $this->filterable($request, $response))
 			return null;
 
