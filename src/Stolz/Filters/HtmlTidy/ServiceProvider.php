@@ -5,13 +5,6 @@ use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 class ServiceProvider extends IlluminateServiceProvider
 {
 	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = true;
-
-	/**
 	 * Bootstrap the application events.
 	 *
 	 * @return void
@@ -39,15 +32,5 @@ class ServiceProvider extends IlluminateServiceProvider
 		$this->app->singleton('stolz.filter.tidy', function ($app) {
 			return new Filter();
 		});
-	}
-
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-		return array('stolz.filter.tidy');
 	}
 }
