@@ -1,7 +1,7 @@
 {
     "name": "stolz/laravel-html-tidy",
     "description": "HTML Tidy filter for Laravel",
-	"keywords": ["htmltidy", "laravel", "html", "xhtml", "html5", "tidy", "filter", "indent", "markup", "beautifier"],
+	"keywords": ["htmltidy", "laravel", "htmlpurifier", "html", "xhtml", "html5", "tidy", "filter", "indent", "markup", "purifier", "beautifier"],
     "authors": [
         {
 			"name": "Stolz",
