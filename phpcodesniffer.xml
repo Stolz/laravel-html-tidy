@@ -16,7 +16,7 @@
 	</rule>
 
 	<!--PHP5 constructor syntax "function __construct()"-->
-	<rule ref="Generic.NamingConventions.ConstructorName"/>
+	<!--<rule ref="Generic.NamingConventions.ConstructorName"/>-->
 
 	<!--Check for deprecated functions-->
 	<rule ref="Generic.PHP.DeprecatedFunctions"/>

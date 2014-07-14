@@ -5,7 +5,6 @@ use Illuminate\Http\Response;
 
 class Filter
 {
-
 	/**
 	 * Whether or not the filter is globally enabled.
 	 * @var bool

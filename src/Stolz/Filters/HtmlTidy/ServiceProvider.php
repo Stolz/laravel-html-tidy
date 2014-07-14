@@ -4,13 +4,12 @@ use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 
 class ServiceProvider extends IlluminateServiceProvider
 {
-
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 *
 	 * @var bool
 	 */
-	protected $defer = false;
+	protected $defer = true;
 
 	/**
 	 * Bootstrap the application events.
@@ -49,6 +48,6 @@ class ServiceProvider extends IlluminateServiceProvider
 	 */
 	public function provides()
 	{
-		return array();
+		return array('stolz.filter.tidy');
 	}
 }
