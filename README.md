@@ -1,5 +1,6 @@
 # Laravel HTML Tidy Filter
 
+## What is it?
 [Laravel-html-tidy](https://github.com/Stolz/laravel-html-tidy) is a [Laravel filter](http://laravel.com/docs/routing#route-filters) that parses Laravel's *Response* objects in order to detect and fix markup problems as well as to improve the layout and indent style of the resulting markup.
 
 ## tl;dr
@@ -12,7 +13,7 @@ Once the filter is enabled every time there is a problem with your HTML code you
 
 ## Requirements
 
-- PHP compiled with HTML Tidy support and 'Tidy' extension enabled in php.ini.
+- PHP compiled with HTML Tidy support and [Tidy](http://php.net/manual/en/book.tidy.php) extension enabled in php.ini.
 - Laravel framework.
 
 ## Installation
@@ -21,16 +22,26 @@ To get the latest version of the filter simply require it in your `composer.json
 
 	composer require "stolz/laravel-html-tidy:dev-master"
 
-Then edit `app/config/app.php` and add the service provider within the `providers` array:
+Then edit `config/app.php` and add the service provider within the `providers` array:
 
 	'providers' => array(
 		'Stolz\Filters\HtmlTidy\ServiceProvider',
 
-Now add the filter to the bottom of your `app/filters.php` file:
+Now add the filter to the bottom of your `app/Providers/FilterServiceProvider.php` file within the `$filters` class attribute:
 
-	Route::filter('html-tidy', 'Stolz\Filters\HtmlTidy\Filter');
+	protected $filters = [
+		//...
+		'html-tidy' => 'Stolz\Filters\HtmlTidy\Filter',
+	];
 
 Here the filter will be named `html-tidy`. Feel free to use any other name as long as you remember to use that name when attaching the filter to your routes.
+
+If you want to use the filter for all of your routes add the filter to the `$after` attribute of your `app/Providers/FilterServiceProvider.php` file:
+
+	protected $after = [
+		//...
+		'Stolz\Filters\HtmlTidy\Filter',
+	];
 
 ## Usage
 
@@ -55,19 +66,11 @@ Sample `app/routes.php` assuming the choosen name for the filter in thre previou
 		Route::get('bar', 'Controller@method2');
 	});
 
-You may also attach it to all of your routes without having to define a route group by editing `app/filters.php` and adding the following to the `App::after()` function:
-
-	App::after(function($request, $response)
-	{
-		return App::make('stolz.filter.tidy')->filter(null, $request, $response);
-	});
-
-
 ## Configuration
 
-To configure the package, you can use the following command to copy the configuration file to `app/config/packages/stolz/laravel-html-tidy/config.php`:
+To configure the package, you can use the following command to copy the configuration file to `config/packages/stolz/laravel-html-tidy/config.php`:
 
-	php artisan config:publish stolz/laravel-html-tidy
+	php artisan publish:config stolz/laravel-html-tidy
 
 All available settings are included inside `config.php` and with the provided comments they should be self-explanatory.
 
