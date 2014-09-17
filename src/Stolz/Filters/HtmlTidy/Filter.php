@@ -1,12 +1,13 @@
 <?php namespace Stolz\Filters\HtmlTidy;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Routing\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 class Filter
 {
 	/**
-	 * Whether or not the filter is globally enabled.
+	 * Whether or not the filter is enabled.
 	 * @var bool
 	 */
 	protected $enabled = true;
@@ -115,33 +116,44 @@ class Filter
 	}
 
 	/**
-	 * Determine whether or not the response should be filtered.
+	 * Run the route filter.
 	 *
-	 * @param  \Illuminate\Http\Request   $request
-	 * @param  \Illuminate\Http\Response  $response
-	 * @return boolean
+	 * @param  \Illuminate\Routing\Route                  $route
+	 * @param  \Illuminate\Http\Request                   $request
+	 * @param  \Symfony\Component\HttpFoundation\Response $response
+	 * @return mixed
 	 */
-	protected function filterable(Request $request, $response)
+	public function filter(Route $route, Request $request, Response $response = null)
 	{
-		if ( ! $this->enabled or ! $response instanceof Response or ($request->ajax() and ! $this->ajax))
-			return false;
-
-		return (strpos($response->headers->get('content-type'), 'text/html') !== false);
+		return $this->globalFilter($request, $response);
 	}
 
 	/**
-	 * Parse resquest response with PHP HTML Tidy extension
+	 * Run the global filter.
 	 *
-	 * @param  \Illuminate\Routing\Route  $route
-	 * @param  \Illuminate\Http\Request   $request
-	 * @param  \Illuminate\Http\Response  $response
-	 * @return \Illuminate\Http\Response|null
+	 * @param  \Illuminate\Http\Request                   $request
+	 * @param  \Symfony\Component\HttpFoundation\Response $response
+	 * @return mixed
 	 */
-	public function filter($route, Request $request, $response)
+	public function globalFilter(Request $request, Response $response = null)
 	{
-		if ( ! $this->filterable($request, $response))
-			return null;
+		if (
+			$response and
+			$this->enabled and
+			( ! $request->ajax() or $this->ajax) and
+			strpos($response->headers->get('content-type'), 'text/html') !== false
+		)
+			return $this->parse($response);
+	}
 
+	/**
+	 * Parse response with PHP's HTML Tidy extension
+	 *
+	 * @param  \Symfony\Component\HttpFoundation\Response $response
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	protected function parse(Response $response)
+	{
 		// Parse output
 		$tidy = new \tidy;
 		$tidy->parseString($response->getContent(), $this->tidy_options, $this->encoding);

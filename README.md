@@ -24,8 +24,10 @@ To get the latest version of the filter simply require it in your `composer.json
 
 Then edit `config/app.php` and add the service provider within the `providers` array:
 
-	'providers' => array(
+	'providers' => [
+		//...
 		'Stolz\Filters\HtmlTidy\ServiceProvider',
+	],
 
 Now add the filter to the bottom of your `app/Providers/FilterServiceProvider.php` file within the `$filters` class attribute:
 
@@ -34,20 +36,13 @@ Now add the filter to the bottom of your `app/Providers/FilterServiceProvider.ph
 		'html-tidy' => 'Stolz\Filters\HtmlTidy\Filter',
 	];
 
-Here the filter will be named `html-tidy`. Feel free to use any other name as long as you remember to use that name when attaching the filter to your routes.
-
-If you want to use the filter for all of your routes add the filter to the `$after` attribute of your `app/Providers/FilterServiceProvider.php` file:
-
-	protected $after = [
-		//...
-		'Stolz\Filters\HtmlTidy\Filter',
-	];
+Here the filter will be named `html-tidy`, feel free to use any other name you prefer.
 
 ## Usage
 
 After following the instructions above the filter is installed and ready to be used as an **"after"** filter. Follow [standard procedure](http://laravel.com/docs/routing#route-filters) to attach the filter to any route(s) you want.
 
-Sample `app/routes.php` assuming the choosen name for the filter in thre previous step was `html-tidy`:
+i.e: Assuming the choosen name for the filter in thre previous step was `html-tidy`:
 
 	// Attach to a route with closure
 	Route::get('some/url', array(
@@ -60,11 +55,19 @@ Sample `app/routes.php` assuming the choosen name for the filter in thre previou
 	// Attach to a controller route
 	Route::get('another/url', array('after' => 'html-tidy', 'uses' => 'Controller@method'));
 
-	// Attach to a collection of routes
+	// Attach to a group of routes
 	Route::group(array('after' => 'html-tidy'), function() {
 		Route::get('foo', 'Controller@method1');
 		Route::get('bar', 'Controller@method2');
 	});
+
+If you want the filter to be available as a global filter add it to the `$after` attribute of your `app/Providers/FilterServiceProvider.php` file:
+
+	protected $after = [
+		'Stolz\Filters\HtmlTidy\Filter@globalFilter',
+	];
+
+Now all your responses whose content type is `text/html`  will be parsed without you having to attach the filter to any route.
 
 ## Configuration
 
