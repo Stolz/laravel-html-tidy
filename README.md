@@ -1,9 +1,9 @@
 # Laravel HTML Tidy Filter
 
-## What is it?
+## tl;dr
 [Laravel-html-tidy](https://github.com/Stolz/laravel-html-tidy) is a [Laravel filter](http://laravel.com/docs/routing#route-filters) that parses Laravel's *Response* objects in order to detect and fix markup problems as well as to improve the layout and indent style of the resulting markup.
 
-## tl;dr
+## How it works
 
 When editing HTML it's easy to make mistakes. Did you ever forget to close a `<div>` tag that made a mess of all your layout and then you went crazy trying to figure out what/where the problem was?. Wouldn't it be nice if there was a simple way to detect and fix these mistakes automatically and at the same time tidy up sloppy editing into nicely layed out markup? Well that is what [W3C HTML Tidy](http://www.w3.org/People/Raggett/tidy/) utility is for!. HTML Tidy is available as a [PHP extension](http://www.php.net/manual/en/book.tidy.php) and this package makes using it with Laravel a breeze.
 
@@ -45,7 +45,7 @@ After following the instructions above the filter is installed and ready to be u
 i.e: Assuming the choosen name for the filter in thre previous step was `html-tidy`:
 
 	// Attach to a route with closure
-	Route::get('some/url', array(
+	get('some/url', array(
 		'after' => 'html-tidy',
 		function() {
 			return View::make('hello');
@@ -53,13 +53,7 @@ i.e: Assuming the choosen name for the filter in thre previous step was `html-ti
 	));
 
 	// Attach to a controller route
-	Route::get('another/url', array('after' => 'html-tidy', 'uses' => 'Controller@method'));
-
-	// Attach to a group of routes
-	Route::group(array('after' => 'html-tidy'), function() {
-		Route::get('foo', 'Controller@method1');
-		Route::get('bar', 'Controller@method2');
-	});
+	get('another/url', array('after' => 'html-tidy', 'uses' => 'Controller@method'));
 
 If you want the filter to be available as a global filter add it to the `$after` attribute of your `app/Providers/FilterServiceProvider.php` file:
 
@@ -67,7 +61,7 @@ If you want the filter to be available as a global filter add it to the `$after`
 		'Stolz\Filters\HtmlTidy\Filter@globalFilter',
 	];
 
-Now all your responses whose content type is `text/html`  will be parsed without you having to attach the filter to any route.
+Now all your responses whose content type is `text/html` will be parsed without you having to attach the filter to any route.
 
 ## Configuration
 
