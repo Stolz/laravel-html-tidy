@@ -38,7 +38,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
 		// Bind 'stolz.tidy' shared component to the IoC container
 		$this->app->singleton('stolz.tidy', function ($app) {
-			return new Middleware($app['config']['tidy']);
+			return new Tidy($app['config']['tidy']);
 		});
 	}
 
