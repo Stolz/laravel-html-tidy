@@ -1,18 +1,19 @@
-<?php namespace Stolz\Filters\HtmlTidy;
+<?php namespace Stolz\HtmlTidy;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use UnexpectedValueException;
+use tidy as PhpTidy;
 
-class Filter
+class Tidy
 {
 	/**
-	 * Whether or not the filter is globally enabled.
+	 * Whether or not the library is enabled.
 	 * @var bool
 	 */
 	protected $enabled = true;
 
 	/**
-	 * Whether or not filter AJAX requests.
+	 * Whether or not process AJAX requests.
 	 * @var bool
 	 */
 	protected $ajax = false;
@@ -69,7 +70,7 @@ class Filter
 	);
 
 	/**
-	 * Errors that match these regexs wont be displayed
+	 * Errors that match these regexs won't be displayed
 	 * @var array
 	 */
 	protected $ignored_errors = array(
@@ -115,35 +116,55 @@ class Filter
 	}
 
 	/**
-	 * Determine whether or not the response should be filtered.
+	 * Handle an incoming request and its response.
 	 *
-	 * @param  \Illuminate\Http\Request   $request
-	 * @param  \Illuminate\Http\Response  $response
-	 * @return boolean
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  mixed  $response
+	 * @return mixed
 	 */
-	protected function filterable(Request $request, $response)
+	public function handle($request, $response)
 	{
-		if ( ! $this->enabled or ! $response instanceof Response or ($request->ajax() and ! $this->ajax))
-			return false;
+		try
+		{
+			// Check PHP extension
+			if( ! extension_loaded('tidy') or ! $this->enabled)
+				throw new UnexpectedValueException;
 
-		return (strpos($response->headers->get('content-type'), 'text/html') !== false);
+			// Check request
+			if($request->ajax() and ! $this->ajax)
+				throw new UnexpectedValueException;
+
+			// Check response
+			if( ! $response instanceof Response)
+			{
+				$response = new Response($response);
+				if( ! $response->headers->has('content-type'))
+					$response->headers->set('content-type', 'text/html');
+			}
+
+			// Check response content type
+			$contentType = $response->headers->get('content-type');
+			if( ! str_contains($contentType, 'text/html'))
+				throw new UnexpectedValueException;
+
+			return $this->parse($response);
+		}
+		catch(UnexpectedValueException $e)
+		{
+			return $response;
+		}
 	}
 
 	/**
-	 * Parse resquest response with PHP HTML Tidy extension
+	 * Parse response with PHP's HTML Tidy extension
 	 *
-	 * @param  \Illuminate\Routing\Route  $route
-	 * @param  \Illuminate\Http\Request   $request
-	 * @param  \Illuminate\Http\Response  $response
-	 * @return \Illuminate\Http\Response|null
+	 * @param  Response $response
+	 * @return Response
 	 */
-	public function filter($route, Request $request, $response)
+	protected function parse(Response $response)
 	{
-		if ( ! $this->filterable($request, $response))
-			return null;
-
 		// Parse output
-		$tidy = new \tidy;
+		$tidy = new PhpTidy;
 		$tidy->parseString($response->getContent(), $this->tidy_options, $this->encoding);
 		$tidy->cleanRepair();
 
@@ -167,8 +188,6 @@ class Filter
 		}
 
 		// Render output
-		$response->setContent($output);
-
-		return $response;
+		return $response->setContent($output);
 	}
 }
