@@ -1,8 +1,8 @@
-<?php namespace Stolz\Filters\HtmlTidy;
+<?php namespace Stolz\HtmlTidy;
 
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 
-class ServiceProvider extends IlluminateServiceProvider
+class LegacyServiceProvider extends IlluminateServiceProvider
 {
 	/**
 	 * Bootstrap the application events.
@@ -18,7 +18,7 @@ class ServiceProvider extends IlluminateServiceProvider
 		$config = $this->app->config->get('html-tidy::config', array());
 
 		// Apply config settings
-		$this->app['stolz.filter.tidy']->config($config);
+		$this->app['stolz.tidy']->config($config);
 	}
 
 	/**
@@ -28,9 +28,9 @@ class ServiceProvider extends IlluminateServiceProvider
 	 */
 	public function register()
 	{
-		// Bind 'stolz.filter.tidy' shared component to the IoC container
-		$this->app->singleton('stolz.filter.tidy', function ($app) {
-			return new Filter();
+		// Bind 'stolz.tidy' shared component to the IoC container
+		$this->app->singleton('stolz.tidy', function ($app) {
+			return new Middleware();
 		});
 	}
 }

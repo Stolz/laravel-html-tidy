@@ -1,10 +1,11 @@
-<?php namespace Stolz\Filters\HtmlTidy;
+<?php namespace Stolz\HtmlTidy;
 
-use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
-use Symfony\Component\HttpFoundation\Response;
+use Closure;
+use Illuminate\Contracts\Routing\Middleware as RouteMiddleware;
+use Illuminate\Http\Response;
+use UnexpectedValueException;
 
-class Filter
+class Middleware implements RouteMiddleware
 {
 	/**
 	 * Whether or not the filter is enabled.
@@ -70,7 +71,7 @@ class Filter
 	);
 
 	/**
-	 * Errors that match these regexs wont be displayed
+	 * Errors that match these regexs won't be displayed
 	 * @var array
 	 */
 	protected $ignored_errors = array(
@@ -116,41 +117,52 @@ class Filter
 	}
 
 	/**
-	 * Run the route filter.
+	 * Handle an incoming request.
 	 *
-	 * @param  \Illuminate\Routing\Route                  $route
-	 * @param  \Illuminate\Http\Request                   $request
-	 * @param  \Symfony\Component\HttpFoundation\Response $response
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Closure  $next
 	 * @return mixed
 	 */
-	public function filter(Route $route, Request $request, Response $response = null)
+	public function handle($request, Closure $next)
 	{
-		return $this->globalFilter($request, $response);
-	}
+		$response = $next($request);
 
-	/**
-	 * Run the global filter.
-	 *
-	 * @param  \Illuminate\Http\Request                   $request
-	 * @param  \Symfony\Component\HttpFoundation\Response $response
-	 * @return mixed
-	 */
-	public function globalFilter(Request $request, Response $response = null)
-	{
-		if (
-			$response and
-			$this->enabled and
-			( ! $request->ajax() or $this->ajax) and
-			strpos($response->headers->get('content-type'), 'text/html') !== false
-		)
+		try
+		{
+			// Check PHP extension
+			if( ! extension_loaded('tidy') or ! $this->enabled)
+				throw new UnexpectedValueException;
+
+			// Check request
+			if($request->ajax() and ! $this->ajax)
+				throw new UnexpectedValueException;
+
+			// Check response
+			if( ! $response instanceof Response)
+			{
+				$response = new Response($response);
+				if( ! $response->headers->has('content-type'))
+					$response->headers->set('content-type', 'text/html');
+			}
+
+			// Check content type
+			$contentType = $response->headers->get('content-type');
+			if( ! str_contains($contentType, 'text/html'))
+				throw new UnexpectedValueException;
+
 			return $this->parse($response);
+		}
+		catch(UnexpectedValueException $e)
+		{
+			return $response;
+		}
 	}
 
 	/**
 	 * Parse response with PHP's HTML Tidy extension
 	 *
-	 * @param  \Symfony\Component\HttpFoundation\Response $response
-	 * @return \Symfony\Component\HttpFoundation\Response
+	 * @param  Response $response
+	 * @return Response
 	 */
 	protected function parse(Response $response)
 	{
@@ -179,8 +191,6 @@ class Filter
 		}
 
 		// Render output
-		$response->setContent($output);
-
-		return $response;
+		return $response->setContent($output);
 	}
 }
