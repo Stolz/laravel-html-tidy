@@ -20,7 +20,7 @@ Once the middleware is enabled every time there is a problem with your HTML code
 
 Install via composer
 
-	composer require stolz/laravel-html-tidy
+	composer require stolz/laravel-html-tidy --dev
 
 Then edit `config/app.php` and add the service provider within the `providers` array:
 
