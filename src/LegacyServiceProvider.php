@@ -12,10 +12,11 @@ class LegacyServiceProvider extends IlluminateServiceProvider
 	public function boot()
 	{
 		// Register the package namespace
-		$this->package('stolz/laravel-html-tidy', 'html-tidy');
+		//$this->package('stolz/tidy', 'tidy'); // Only valid if config file is at src/config/config.php
+		$this->app->config->package('stolz/tidy', __DIR__, 'tidy');
 
 		// Read settings from config file
-		$config = $this->app->config->get('html-tidy::config', array());
+		$config = $this->app->config->get('tidy::config', []);
 
 		// Apply config settings
 		$this->app['stolz.tidy']->config($config);
@@ -30,7 +31,7 @@ class LegacyServiceProvider extends IlluminateServiceProvider
 	{
 		// Bind 'stolz.tidy' shared component to the IoC container
 		$this->app->singleton('stolz.tidy', function ($app) {
-			return new Middleware();
+			return new Tidy();
 		});
 	}
 }

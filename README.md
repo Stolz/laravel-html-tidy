@@ -42,14 +42,11 @@ If you want the middleware to be run only on specific routes, add the class in t
 		'tidy' => 'Stolz\HtmlTidy\Middleware',
 	];
 
-Now in your `routes.php` file you can use
+Now you can use it in your `routes.php` file
 
-	get('some/url', [
-		'middleware' => 'tidy',
-		function() {
-			return view('hello');
-		}
-	]);
+	get('some/url', ['middleware' => 'tidy', function() {
+		return view('home');
+	}]);
 
 Conversely if you want the middleware to be run on every HTTP request to your application, add the class in the `$middleware` property of your `app/Http/Kernel.php` file.
 
@@ -57,6 +54,21 @@ Conversely if you want the middleware to be run on every HTTP request to your ap
 		...
 		'Stolz\HtmlTidy\Middleware',
 	];
+
+## Laravel 4
+
+If you are still using Laravel 4 instead of loading `Stolz\HtmlTidy\ServiceProvider` use `Stolz\HtmlTidy\LegacyServiceProvider` and then in your `routes.php` file use something like this
+
+	// Register filter
+	Route::filter('tidy', function($route, $request, $response) {
+		return app('stolz.tidy')->handle($request, $response);
+	});
+
+	// Use as an 'after' filter
+	Route::get('/', ['after' => 'tidy', function() {
+		return View::make('home');
+	}]);
+
 
 ## License
 
