@@ -54,7 +54,7 @@ class Tidy
 	 * Please read http://tidy.sourceforge.net/docs/quickref.html
 	 * @var array
 	 */
-	protected $tidy_options = array(
+	protected $tidy_options = [
 		'output-xhtml' => true,
 		'char-encoding' => 'utf8',
 		//'hide-comments' => true,
@@ -67,13 +67,13 @@ class Tidy
 		'doctype' => 'omit', //The filter will add the configured doctype later
 		'new-blocklevel-tags' => 'article,aside,canvas,dialog,embed,figcaption,figure,footer,header,hgroup,nav,output,progress,section,video',
 		'new-inline-tags' => 'audio,bdi,command,datagrid,datalist,details,keygen,mark,meter,rp,rt,ruby,source,summary,time,track,wbr',
-	);
+	];
 
 	/**
 	 * Errors that match these regexs won't be displayed
 	 * @var array
 	 */
-	protected $ignored_errors = array(
+	protected $ignored_errors = [
 		// workaround to hide errors related to HTML5
 		"/line.*proprietary attribute \"data-.*\n?/",
 		"/line.*proprietary attribute \"placeholder.*\n?/",
@@ -86,7 +86,7 @@ class Tidy
 		"/line.*<script> inserting \"type\" attribute\n?/",
 		"/line.*<input> proprietary attribute \"autocomplete\"\n?/",
 		"/line.*<input> proprietary attribute \"autofocus\"\n?/",
-	);
+	];
 
 	/**
 	 * Class constructor.
@@ -94,7 +94,7 @@ class Tidy
 	 * @param  array $options
 	 * @return void
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		if($options)
 			$this->config($options);

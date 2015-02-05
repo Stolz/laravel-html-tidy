@@ -10,12 +10,12 @@
 | For more info please visit https://github.com/Stolz/laravel-html-tidy
 |
 */
-return array(
+return [
 
 	// Enable if PHP has tidy extension support
 	'enabled' => extension_loaded('tidy'),
 
-	/*// Filter AJAX requests
+	// Process AJAX requests
 	'ajax' => false,
 
 	// Encoding of your original documents. This refers to the encoding that you original documents have,
@@ -35,7 +35,7 @@ return array(
 	'container_close_tag' => '</div>',
 
 	// Options passed to HTML Tidy parseString() function. Docs: http://tidy.sourceforge.net/docs/quickref.html
-	'tidy_options' => array(
+	'tidy_options' => [
 		'output-xhtml' => true,
 		'char-encoding' => 'utf8',
 		'wrap' => 0,
@@ -45,12 +45,12 @@ return array(
 
 		// HTML5 workarounds
 		'doctype' => 'omit', //The filter will add the configured doctype later
-		'new-blocklevel-tags' =>  'article,aside,canvas,dialog,embed,figcaption,figure,footer,header,hgroup,nav,output,progress,section,video',
+		'new-blocklevel-tags' => 'article,aside,canvas,dialog,embed,figcaption,figure,footer,header,hgroup,nav,output,progress,section,video',
 		'new-inline-tags' => 'audio,bdi,command,datagrid,datalist,details,keygen,mark,meter,rp,rt,ruby,source,summary,time,track,wbr',
-	),
+	],
 
 	// Errors that match these regexs wont be displayed
-	'ignored_errors' => array(
+	'ignored_errors' => [
 		// workaround to hide errors related to HTML5
 		"/line.*proprietary attribute \"data-.*\n?/",
 		"/line.*proprietary attribute \"placeholder.*\n?/",
@@ -63,6 +63,6 @@ return array(
 		"/line.*<script> inserting \"type\" attribute\n?/",
 		"/line.*<input> proprietary attribute \"autocomplete\"\n?/",
 		"/line.*<input> proprietary attribute \"autofocus\"\n?/",
-	),
-	*/
-);
+	],
+
+];
