@@ -10,13 +10,6 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 	protected $defer = true;
 
 	/**
-	 * Path to the default config file.
-	 *
-	 * @var string
-	 */
-	protected $configFile = __DIR__ . '/config.php';
-
-	/**
 	 * Get the services provided by the provider.
 	 *
 	 * @return array
@@ -34,7 +27,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 	public function register()
 	{
 		// Merge user's configuration
-		$this->mergeConfigFrom($this->configFile, 'tidy');
+		$this->mergeConfigFrom(__DIR__ . '/config.php', 'tidy');
 
 		// Bind 'stolz.tidy' shared component to the IoC container
 		$this->app->singleton('stolz.tidy', function ($app) {
@@ -51,7 +44,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 	{
 		// Register paths to be published by 'vendor:publish' artisan command
 		$this->publishes([
-			$this->configFile => config_path('tidy.php'),
+			__DIR__ . '/config.php' => config_path('tidy.php'),
 		]);
 	}
 }
