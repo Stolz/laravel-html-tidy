@@ -74,3 +74,5 @@ If you are still using Laravel 4 instead of loading `Stolz\HtmlTidy\ServiceProvi
 
 MIT License
 © [Stolz](https://github.com/Stolz)
+
+Read the provided `LICENSE` file for details.

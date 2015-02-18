@@ -1,5 +1,6 @@
 <?php namespace Stolz\HtmlTidy;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use UnexpectedValueException;
 use tidy as PhpTidy;
@@ -55,18 +56,18 @@ class Tidy
 	 * @var array
 	 */
 	protected $tidy_options = [
-		'output-xhtml' => true,
-		'char-encoding' => 'utf8',
-		//'hide-comments' => true,
-		'wrap' => 0,
-		'wrap-sections' => false,
-		'indent' => 2, // 2 is equivalent to 'auto', which seems to be ignored by PHP-html-tidy extension
-		'indent-spaces' => 4,
+	'output-xhtml' => true,
+	'char-encoding' => 'utf8',
+	//'hide-comments' => true,
+	'wrap' => 0,
+	'wrap-sections' => false,
+	'indent' => 2, // 2 is equivalent to 'auto', which seems to be ignored by PHP-html-tidy extension
+	'indent-spaces' => 4,
 
-		// HTML5 workarounds
-		'doctype' => 'omit', //The filter will add the configured doctype later
-		'new-blocklevel-tags' => 'article,aside,canvas,dialog,embed,figcaption,figure,footer,header,hgroup,nav,output,progress,section,video',
-		'new-inline-tags' => 'audio,bdi,command,datagrid,datalist,details,keygen,mark,meter,rp,rt,ruby,source,summary,time,track,wbr',
+	// HTML5 workarounds
+	'doctype' => 'omit', //The filter will add the configured doctype later
+	'new-blocklevel-tags' => 'article,aside,canvas,dialog,embed,figcaption,figure,footer,header,hgroup,nav,output,progress,section,video',
+	'new-inline-tags' => 'audio,bdi,command,datagrid,datalist,details,keygen,mark,meter,rp,rt,ruby,source,summary,time,track,wbr',
 	];
 
 	/**
@@ -74,18 +75,18 @@ class Tidy
 	 * @var array
 	 */
 	protected $ignored_errors = [
-		// workaround to hide errors related to HTML5
-		"/line.*proprietary attribute \"data-.*\n?/",
-		"/line.*proprietary attribute \"placeholder.*\n?/",
-		"/line.*is not approved by W3C\n?/",
-		"/line.*<html> proprietary attribute \"class\"\n?/",
-		"/line.*<meta> proprietary attribute \"charset\"\n?/",
-		"/line.*<meta> lacks \"content\" attribute\n?/",
-		"/line.*<table> lacks \"summary\" attribute\n?/",
-		"/line.*<style> inserting \"type\" attribute\n?/",
-		"/line.*<script> inserting \"type\" attribute\n?/",
-		"/line.*<input> proprietary attribute \"autocomplete\"\n?/",
-		"/line.*<input> proprietary attribute \"autofocus\"\n?/",
+	// workaround to hide errors related to HTML5
+	"/line.*proprietary attribute \"data-.*\n?/",
+	"/line.*proprietary attribute \"placeholder.*\n?/",
+	"/line.*is not approved by W3C\n?/",
+	"/line.*<html> proprietary attribute \"class\"\n?/",
+	"/line.*<meta> proprietary attribute \"charset\"\n?/",
+	"/line.*<meta> lacks \"content\" attribute\n?/",
+	"/line.*<table> lacks \"summary\" attribute\n?/",
+	"/line.*<style> inserting \"type\" attribute\n?/",
+	"/line.*<script> inserting \"type\" attribute\n?/",
+	"/line.*<input> proprietary attribute \"autocomplete\"\n?/",
+	"/line.*<input> proprietary attribute \"autofocus\"\n?/",
 	];
 
 	/**
@@ -134,7 +135,13 @@ class Tidy
 			if($request->ajax() and ! $this->ajax)
 				throw new UnexpectedValueException;
 
-			// Check response
+			// Check response ...
+
+			// ... skip redirects
+			if($response instanceof RedirectResponse)
+				throw new UnexpectedValueException;
+
+			// ... convert unknown responses
 			if( ! $response instanceof Response)
 			{
 				$response = new Response($response);
