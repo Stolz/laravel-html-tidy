@@ -1,24 +1,10 @@
 <?php namespace Stolz\HtmlTidy;
 
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
 use UnexpectedValueException;
 use tidy as PhpTidy;
 
 class Tidy
 {
-	/**
-	 * Whether or not the library is enabled.
-	 * @var bool
-	 */
-	protected $enabled = true;
-
-	/**
-	 * Whether or not process AJAX requests.
-	 * @var bool
-	 */
-	protected $ajax = false;
-
 	/**
 	 * Encoding of the original documents.
 	 * Possible values: ascii, latin0, latin1, raw, utf8, iso2022, mac, win1252, ibm858, utf16, utf16le, utf16be, big5, and shiftjis.
@@ -56,18 +42,18 @@ class Tidy
 	 * @var array
 	 */
 	protected $tidy_options = [
-	'output-xhtml' => true,
-	'char-encoding' => 'utf8',
-	//'hide-comments' => true,
-	'wrap' => 0,
-	'wrap-sections' => false,
-	'indent' => 2, // 2 is equivalent to 'auto', which seems to be ignored by PHP-html-tidy extension
-	'indent-spaces' => 4,
+		'output-xhtml' => true,
+		'char-encoding' => 'utf8',
+		//'hide-comments' => true,
+		'wrap' => 0,
+		'wrap-sections' => false,
+		'indent' => 2, // 2 is equivalent to 'auto', which seems to be ignored by PHP-html-tidy extension
+		'indent-spaces' => 4,
 
-	// HTML5 workarounds
-	'doctype' => 'omit', //The filter will add the configured doctype later
-	'new-blocklevel-tags' => 'article,aside,canvas,dialog,embed,figcaption,figure,footer,header,hgroup,nav,output,progress,section,video',
-	'new-inline-tags' => 'audio,bdi,command,datagrid,datalist,details,keygen,mark,meter,rp,rt,ruby,source,summary,time,track,wbr',
+		// HTML5 workarounds
+		'doctype' => 'omit', //The filter will add the configured doctype later
+		'new-blocklevel-tags' => 'article,aside,canvas,dialog,embed,figcaption,figure,footer,header,hgroup,nav,output,progress,section,video',
+		'new-inline-tags' => 'audio,bdi,command,datagrid,datalist,details,keygen,mark,meter,rp,rt,ruby,source,summary,time,track,wbr',
 	];
 
 	/**
@@ -75,18 +61,18 @@ class Tidy
 	 * @var array
 	 */
 	protected $ignored_errors = [
-	// workaround to hide errors related to HTML5
-	"/line.*proprietary attribute \"data-.*\n?/",
-	"/line.*proprietary attribute \"placeholder.*\n?/",
-	"/line.*is not approved by W3C\n?/",
-	"/line.*<html> proprietary attribute \"class\"\n?/",
-	"/line.*<meta> proprietary attribute \"charset\"\n?/",
-	"/line.*<meta> lacks \"content\" attribute\n?/",
-	"/line.*<table> lacks \"summary\" attribute\n?/",
-	"/line.*<style> inserting \"type\" attribute\n?/",
-	"/line.*<script> inserting \"type\" attribute\n?/",
-	"/line.*<input> proprietary attribute \"autocomplete\"\n?/",
-	"/line.*<input> proprietary attribute \"autofocus\"\n?/",
+		// workaround to hide errors related to HTML5
+		"/line.*proprietary attribute \"data-.*\n?/",
+		"/line.*proprietary attribute \"placeholder.*\n?/",
+		"/line.*is not approved by W3C\n?/",
+		"/line.*<html> proprietary attribute \"class\"\n?/",
+		"/line.*<meta> proprietary attribute \"charset\"\n?/",
+		"/line.*<meta> lacks \"content\" attribute\n?/",
+		"/line.*<table> lacks \"summary\" attribute\n?/",
+		"/line.*<style> inserting \"type\" attribute\n?/",
+		"/line.*<script> inserting \"type\" attribute\n?/",
+		"/line.*<input> proprietary attribute \"autocomplete\"\n?/",
+		"/line.*<input> proprietary attribute \"autofocus\"\n?/",
 	];
 
 	/**
@@ -117,62 +103,16 @@ class Tidy
 	}
 
 	/**
-	 * Handle an incoming request and its response.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  mixed  $response
-	 * @return mixed
-	 */
-	public function handle($request, $response)
-	{
-		try
-		{
-			// Check PHP extension
-			if( ! extension_loaded('tidy') or ! $this->enabled)
-				throw new UnexpectedValueException;
-
-			// Check request
-			if($request->ajax() and ! $this->ajax)
-				throw new UnexpectedValueException;
-
-			// Check response ...
-
-			// ... skip redirects
-			if($response instanceof RedirectResponse)
-				throw new UnexpectedValueException;
-
-			// ... convert unknown responses
-			if( ! $response instanceof Response)
-			{
-				$response = new Response($response);
-				if( ! $response->headers->has('content-type'))
-					$response->headers->set('content-type', 'text/html');
-			}
-
-			// Check response content type
-			$contentType = $response->headers->get('content-type');
-			if( ! str_contains($contentType, 'text/html'))
-				throw new UnexpectedValueException;
-
-			return $this->parse($response);
-		}
-		catch(UnexpectedValueException $e)
-		{
-			return $response;
-		}
-	}
-
-	/**
 	 * Parse response with PHP's HTML Tidy extension
 	 *
-	 * @param  Response $response
-	 * @return Response
+	 * @param  string
+	 * @return string
 	 */
-	protected function parse(Response $response)
+	public function parse($input)
 	{
-		// Parse output
+		// Parse input
 		$tidy = new PhpTidy;
-		$tidy->parseString($response->getContent(), $this->tidy_options, $this->encoding);
+		$tidy->parseString($input, $this->tidy_options, $this->encoding);
 		$tidy->cleanRepair();
 
 		// Set doctype
@@ -194,7 +134,6 @@ class Tidy
 			$output = str_replace('</body>', $errors . '</body>', $output);
 		}
 
-		// Render output
-		return $response->setContent($output);
+		return $output;
 	}
 }
