@@ -1,10 +1,12 @@
 <?php namespace Stolz\HtmlTidy;
 
-use Illuminate\Contracts\Routing\Middleware as BaseMiddleware;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class Middleware implements BaseMiddleware
+class Middleware implements \Illuminate\Contracts\Routing\Middleware
 {
 	/**
 	 * Handle an incoming request.
@@ -21,12 +23,15 @@ class Middleware implements BaseMiddleware
 		if( ! extension_loaded('tidy') or ! config('tidy.enabled'))
 			return $response;
 
-		// Check request
-		if($request->ajax() and ! config('tidy.ajax'))
+		// Skip special response types
+		if(($response instanceof BinaryFileResponse) or
+		($response instanceof JsonResponse) or
+		($response instanceof RedirectResponse) or
+		($response instanceof StreamedResponse))
 			return $response;
 
-		// Skip redirects
-		if($response instanceof RedirectResponse)
+		// Check request
+		if($request->ajax() and ! config('tidy.ajax'))
 			return $response;
 
 		// Convert unknown responses
