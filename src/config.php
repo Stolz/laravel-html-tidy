@@ -52,17 +52,18 @@ return [
 	// Errors that match these regexs wont be displayed
 	'ignored_errors' => [
 		// workaround to hide errors related to HTML5
-		"/line.*proprietary attribute \"data-.*\n?/",
-		"/line.*proprietary attribute \"placeholder.*\n?/",
-		"/line.*is not approved by W3C\n?/",
 		"/line.*<html> proprietary attribute \"class\"\n?/",
-		"/line.*<meta> proprietary attribute \"charset\"\n?/",
-		"/line.*<meta> lacks \"content\" attribute\n?/",
-		"/line.*<table> lacks \"summary\" attribute\n?/",
-		"/line.*<style> inserting \"type\" attribute\n?/",
-		"/line.*<script> inserting \"type\" attribute\n?/",
 		"/line.*<input> proprietary attribute \"autocomplete\"\n?/",
 		"/line.*<input> proprietary attribute \"autofocus\"\n?/",
+		"/line.*<meta> lacks \"content\" attribute\n?/",
+		"/line.*<meta> proprietary attribute \"charset\"\n?/",
+		"/line.*<script> inserting \"type\" attribute\n?/",
+		"/line.*<style> inserting \"type\" attribute\n?/",
+		"/line.*<table> lacks \"summary\" attribute\n?/",
+		"/line.*is not approved by W3C\n?/",
+		"/line.*proprietary attribute \"data-.*\n?/",
+		"/line.*proprietary attribute \"placeholder.*\n?/",
+		"/line.*proprietary attribute \"contenteditable.*\n?/",
 	],
 
 ];
