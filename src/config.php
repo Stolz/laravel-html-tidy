@@ -29,10 +29,10 @@ return [
 	'display_errors' => true,
 
 	// Errors container opening tag
-	'container_open_tag' => '<div id="tidy_errors" style="position: absolute;right: 0;top: 0;z-index: 100;padding:1em;margin:1em;border:1px solid #DC0024;font-family: Sans-Serif;background-color:#FFE5E5;color:#DC0024"><a style="float:right;cursor:pointer;color:blue;margin:-15px" onclick="document.getElementById(\'tidy_errors\').style.display = \'none\'">[x]</a>',
+	//'container_open_tag' => '<div id="tidy_errors" style="position: absolute;right: 0;top: 0;z-index: 100;padding:1em;margin:1em;border:1px solid #DC0024;font-family: Sans-Serif;background-color:#FFE5E5;color:#DC0024"><a style="float:right;cursor:pointer;color:blue;margin:-15px" onclick="document.getElementById(\'tidy_errors\').style.display = \'none\'">[x]</a>',
 
 	// Errors container closing tag
-	'container_close_tag' => '</div>',
+	//'container_close_tag' => '</div>',
 
 	// Options passed to HTML Tidy parseString() function. Docs: http://tidy.sourceforge.net/docs/quickref.html
 	'tidy_options' => [

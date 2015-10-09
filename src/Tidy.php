@@ -1,10 +1,23 @@
 <?php namespace Stolz\HtmlTidy;
 
+use Illuminate\Http\Response;
 use UnexpectedValueException;
 use tidy as PhpTidy;
 
 class Tidy
 {
+	/**
+	 * Whether or not the library is enabled.
+	 * @var bool
+	 */
+	protected $enabled = true;
+
+	/**
+	 * Whether or not process AJAX requests.
+	 * @var bool
+	 */
+	protected $ajax = false;
+
 	/**
 	 * Encoding of the original documents.
 	 * Possible values: ascii, latin0, latin1, raw, utf8, iso2022, mac, win1252, ibm858, utf16, utf16le, utf16be, big5, and shiftjis.
@@ -28,13 +41,29 @@ class Tidy
 	 * Errors container opening tag
 	 * @var string
 	 */
-	protected $container_open_tag = '<div id="tidy_errors" style="position: absolute;right: 0;top: 0;z-index: 100;padding:1em;margin:1em;border:1px solid #DC0024;font-family: Sans-Serif;background-color:#FFE5E5;color:#DC0024"><a style="float:right;cursor:pointer;color:blue;margin:-15px" onclick="document.getElementById(\'tidy_errors\').style.display = \'none\'">[x]</a>';
+	protected $container_open_tag = '
+<style type="text/css">
+#tidy-errors {
+    font-family: Sans-Serif;
+    position: absolute; right: 0; top: 0; z-index: 100;
+    padding:1em; margin:1em;
+    border:1px solid #DC0024;
+    color:#DC0024 background-color:#FFE5E5; }
+#hide-tidy-errors {
+    float:right; cursor:pointer; color:blue; margin:-15px }
+</style>
+<div id="tidy-errors"
+    <a id="hide-tidy-errors"
+    onclick="document.getElementById(\'tidy-errors\').style.display = \'none\'">[x]</a>
+';
 
 	/**
 	 * Errors container closing tag
 	 * @var string
 	 */
-	protected $container_close_tag = '</div>';
+	protected $container_close_tag = '
+</div>
+';
 
 	/**
 	 * Options passed to HTML Tidy parseString() function.
@@ -102,17 +131,66 @@ class Tidy
 		}
 	}
 
+	public function addElement($element, $type = 'inline')
+	{
+		if ($type == 'inline' or $type == 'new-inline-tags') {
+			$this->tidy_options['new-inline-tags'] .= ",$element";
+		} elseif ($type == 'block' or $type == 'new-blocklevel-tags') {
+			$this->tidy_options['new-blocklevel-tags'] .= ",$element";
+		}
+	}
+
+	/**
+	 * Handle an incoming request and its response.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  mixed  $response
+	 * @return mixed
+	 */
+	public function handle($request, $response)
+	{
+		try
+		{
+			// Check PHP extension
+			if( ! extension_loaded('tidy') or ! $this->enabled)
+				throw new UnexpectedValueException;
+
+			// Check request
+			if($request->ajax() and ! $this->ajax)
+				throw new UnexpectedValueException;
+
+			// Check response
+			if( ! $response instanceof Response)
+			{
+				$response = new Response($response);
+				if( ! $response->headers->has('content-type'))
+					$response->headers->set('content-type', 'text/html');
+			}
+
+			// Check response content type
+			$contentType = $response->headers->get('content-type');
+			if( ! str_contains($contentType, 'text/html'))
+				throw new UnexpectedValueException;
+
+			return $this->parse($response);
+		}
+		catch(UnexpectedValueException $e)
+		{
+			return $response;
+		}
+	}
+
 	/**
 	 * Parse response with PHP's HTML Tidy extension
 	 *
-	 * @param  string
-	 * @return string
+	 * @param  Response $response
+	 * @return Response
 	 */
-	public function parse($input)
+	protected function parse(Response $response)
 	{
-		// Parse input
+		// Parse output
 		$tidy = new PhpTidy;
-		$tidy->parseString($input, $this->tidy_options, $this->encoding);
+		$tidy->parseString($response->getContent(), $this->tidy_options, $this->encoding);
 		$tidy->cleanRepair();
 
 		// Set doctype
@@ -134,6 +212,7 @@ class Tidy
 			$output = str_replace('</body>', $errors . '</body>', $output);
 		}
 
-		return $output;
+		// Render output
+		return $response->setContent($output);
 	}
 }
