@@ -41,13 +41,29 @@ class Tidy
 	 * Errors container opening tag
 	 * @var string
 	 */
-	protected $container_open_tag = '<div id="tidy_errors" style="position: absolute;right: 0;top: 0;z-index: 100;padding:1em;margin:1em;border:1px solid #DC0024;font-family: Sans-Serif;background-color:#FFE5E5;color:#DC0024"><a style="float:right;cursor:pointer;color:blue;margin:-15px" onclick="document.getElementById(\'tidy_errors\').style.display = \'none\'">[x]</a>';
+	protected $container_open_tag = '
+<style type="text/css">
+#tidy-errors {
+    font-family: Sans-Serif;
+    position: absolute; right: 0; top: 0; z-index: 100;
+    padding:1em; margin:1em;
+    border:1px solid #DC0024;
+    color:#DC0024 background-color:#FFE5E5; }
+#hide-tidy-errors {
+    float:right; cursor:pointer; color:blue; margin:-15px }
+</style>
+<div id="tidy-errors"
+    <a id="hide-tidy-errors"
+    onclick="document.getElementById(\'tidy-errors\').style.display = \'none\'">[x]</a>
+';
 
 	/**
 	 * Errors container closing tag
 	 * @var string
 	 */
-	protected $container_close_tag = '</div>';
+	protected $container_close_tag = '
+</div>
+';
 
 	/**
 	 * Options passed to HTML Tidy parseString() function.
@@ -115,6 +131,14 @@ class Tidy
 		}
 	}
 
+	public function addElement($element, $type = 'inline')
+	{
+		if ($type == 'inline' or $type == 'new-inline-tags') {
+			$this->tidy_options['new-inline-tags'] .= ",$element";
+		} elseif ($type == 'block' or $type == 'new-blocklevel-tags') {
+			$this->tidy_options['new-blocklevel-tags'] .= ",$element";
+		}
+	}
 
 	/**
 	 * Handle an incoming request and its response.
