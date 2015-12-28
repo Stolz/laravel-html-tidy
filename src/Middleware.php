@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class Middleware implements \Illuminate\Contracts\Routing\Middleware
+class Middleware
 {
 	/**
 	 * Handle an incoming request.
@@ -20,7 +20,7 @@ class Middleware implements \Illuminate\Contracts\Routing\Middleware
 		$response = $next($request);
 
 		// Check PHP extension
-		if( ! extension_loaded('tidy') or ! config('tidy.enabled'))
+		if( ! extension_loaded('tidy') or ! config('tidy.enabled', true))
 			return $response;
 
 		// Skip special response types
@@ -31,7 +31,7 @@ class Middleware implements \Illuminate\Contracts\Routing\Middleware
 			return $response;
 
 		// Check request
-		if($request->ajax() and ! config('tidy.ajax'))
+		if($request->ajax() and ! config('tidy.ajax', false))
 			return $response;
 
 		// Convert unknown responses
