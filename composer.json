@@ -28,6 +28,5 @@
 		"optimize-autoloader": true,
 		"preferred-install": "dist"
 	},
-	"minimum-stability": "dev",
 	"license": "MIT"
 }
