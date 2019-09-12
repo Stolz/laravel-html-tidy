@@ -22,10 +22,10 @@ Install via composer
 
 	composer require stolz/laravel-html-tidy --dev
 
-Then edit `config/app.php` and add the service provider within the `providers` array:
+If you are using an old version of Laravel without the package discovery feature (or if you have disabled it), then you have to manually edit `config/app.php` file and add the service provider to the `providers` array:
 
 	'providers' => [
-		//...
+		...
 		'Stolz\HtmlTidy\ServiceProvider',
 	],
 
@@ -44,9 +44,7 @@ If you want the middleware to be run only on specific routes, add the class in t
 
 Now you can use it in your `routes.php` file
 
-	get('some/url', ['middleware' => 'tidy', function() {
-		return view('home');
-	}]);
+	Route::get('some/url', function () {...})->middleware('tidy');
 
 Conversely if you want the middleware to be run on every HTTP request to your application, add the class in the `$middleware` property of your `app/Http/Kernel.php` file.
 
