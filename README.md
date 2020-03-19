@@ -31,7 +31,7 @@ If you are using an old version of Laravel without the package discovery feature
 
 The default settings can validate both (x)HTML 4 and HTML 5 markups. If you want to customize the settings create the file `config/tidy.php` by running
 
-	php artisan vendor:publish
+	php artisan vendor:publish --provider='Stolz\HtmlTidy\ServiceProvider'
 
 ## Usage
 
