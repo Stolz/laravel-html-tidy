@@ -28,5 +28,12 @@
 		"optimize-autoloader": true,
 		"preferred-install": "dist"
 	},
-	"license": "MIT"
+	"license": "MIT",
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Stolz\\HtmlTidy\\ServiceProvider"
+			]
+		}
+	}
 }
