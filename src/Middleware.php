@@ -1,5 +1,6 @@
 <?php namespace Stolz\HtmlTidy;
 
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -44,7 +45,7 @@ class Middleware
 
 		// If response is HTML parse it
 		$contentType = $response->headers->get('content-type');
-		if(str_contains($contentType, 'text/html'))
+		if(Str::contains($contentType, 'text/html'))
 			$response->setContent(app('stolz.tidy')->parse($response->getContent()));
 
 		return $response;
